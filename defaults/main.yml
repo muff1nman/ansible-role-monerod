@@ -4,11 +4,11 @@ monero_version: 0.14.0.2
 monero_os: linux
 monero_arch: x64
 monero_archive_ext: ".tar.bz2"
-monero_archive: "monero-{{ monero_os }}-{{ monero_arch }}-{{ monero_version }}.tar.bz2"
+monero_archive_file: "monero-{{ monero_os }}-{{ monero_arch }}-v{{ monero_version }}.tar.bz2"
 monero_install_dir: "/opt/monero-v{{ monero_version }}"
-monero_download_url: "https://downloads.getmonero.org/cli/{{ monero_archive }}"
-monero_checksum: "sha256:{{ monero_archive[monero_version].checksum }}"
-monero_archive:
+monero_download_url: "https://downloads.getmonero.org/cli/{{ monero_archive_file }}"
+monero_checksum: "sha256:{{ monero_archives[monero_version].checksum }}"
+monero_archives:
   0.11.1.0:
     checksum: 6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
   0.12.0.0:

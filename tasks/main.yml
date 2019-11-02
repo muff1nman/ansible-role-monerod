@@ -8,15 +8,14 @@
   get_url:
     checksum: "{{ monero_checksum }}"
     url: "{{ monero_download_url }}"
-    dest: "{{ tmp_download_dir }}{{ monero_archive }}"
+    dest: "{{ tmp_download_dir }}{{ monero_archive_file }}"
 - unarchive:
-    src: "{{ tmp_download_dir }}{{ monero_archive }}"
+    src: "{{ tmp_download_dir }}{{ monero_archive_file }}"
     dest: "{{ monero_install_dir }}"
     mode: 0775
     remote_src: True
     extra_opts:
     - --strip=1
-    creates: "{{ monero_install_dir }}/monerod"
 - name: Create partition on monero disk
   parted:
     device: "{{ monero_blockchain_disk }}"
