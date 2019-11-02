@@ -1,3 +1,6 @@
 ---
 - name: "systemd"
   command: systemctl daemon-reload
+- name: "monero"
+  set_fact:
+    _monero_service_state: restarted

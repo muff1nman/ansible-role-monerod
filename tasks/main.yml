@@ -4,55 +4,70 @@
     name: monerod
     shell: /usr/sbin/nologin
     home: /var/lib/monero
+  notify: [ "monero" ]
 - name: Download monero
   get_url:
     checksum: "{{ monero_checksum }}"
     url: "{{ monero_download_url }}"
     dest: "{{ tmp_download_dir }}{{ monero_archive_file }}"
-- unarchive:
+  notify: [ "monero" ]
+- name: Create install dir
+  file:
+    state: directory
+    path: "{{ monero_install_dir }}"
+    mode: 0775
+- name: Unarchive monero to install dir
+  unarchive:
     src: "{{ tmp_download_dir }}{{ monero_archive_file }}"
     dest: "{{ monero_install_dir }}"
     mode: 0775
     remote_src: True
     extra_opts:
     - --strip=1
+  notify: [ "monero" ]
 - name: Create partition on monero disk
   parted:
     device: "{{ monero_blockchain_disk }}"
     number: 1
     state: present
+  notify: [ "monero" ]
 - name: Create filesystem on monero disk
   filesystem:
     fstype: xfs
     dev: "{{ monero_blockchain_disk }}1"
+  notify: [ "monero" ]
 - name: Mount monero disk
   mount:
     path: /var/lib/monero
     src: "{{ monero_blockchain_disk }}1"
     fstype: xfs
     state: mounted
+  notify: [ "monero" ]
 - name: Create monero blockchain mount dir
   file:
     state: directory
     owner: monerod
     path: /var/lib/monero
     mode: 0700
+  notify: [ "monero" ]
 - name: Copy monerod.conf
   copy:
     src: monerod.conf
     dest: /etc/monerod.conf
     mode: 0644
+  notify: [ "monero" ]
 - name: Create monero log dir
   file:
     state: directory
     owner: monerod
     path: /var/log/monero
     mode: 0700
+  notify: [ "monero" ]
 - name: Setup monero systemd service
   template:
     src: monerod.service.j2
     dest: /etc/systemd/system/monerod.service
-  notify: [ "systemd" ]
+  notify: [ "systemd", "monero" ]
 - name: Setup firewalld service
   copy: src=firewalld-monerod.xml dest=/etc/firewalld/services/monerod.xml
   notify: [ "firewalld" ]
@@ -63,5 +78,5 @@
 - name: Start monerod service
   service: 
     name: monerod
-    state: started
+    state: "{{ _monero_service_state }}"
     enabled: yes
