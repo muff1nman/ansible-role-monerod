@@ -1,0 +1,68 @@
+---
+- name: Create monero user
+  user:
+    name: monerod
+    shell: /usr/sbin/nologin
+    home: /var/lib/monero
+- name: Download monero
+  get_url:
+    checksum: "{{ monero_checksum }}"
+    url: "{{ monero_download_url }}"
+    dest: "{{ tmp_download_dir }}{{ monero_archive }}"
+- unarchive:
+    src: "{{ tmp_download_dir }}{{ monero_archive }}"
+    dest: "{{ monero_install_dir }}"
+    mode: 0775
+    remote_src: True
+    extra_opts:
+    - --strip=1
+    creates: "{{ monero_install_dir }}/monerod"
+- name: Create partition on monero disk
+  parted:
+    device: "{{ monero_blockchain_disk }}"
+    number: 1
+    state: present
+- name: Create filesystem on monero disk
+  filesystem:
+    fstype: xfs
+    dev: "{{ monero_blockchain_disk }}1"
+- name: Mount monero disk
+  mount:
+    path: /var/lib/monero
+    src: "{{ monero_blockchain_disk }}1"
+    fstype: xfs
+    state: mounted
+- name: Create monero blockchain mount dir
+  file:
+    state: directory
+    owner: monerod
+    path: /var/lib/monero
+    mode: 0700
+- name: Copy monerod.conf
+  copy:
+    src: monerod.conf
+    dest: /etc/monerod.conf
+    mode: 0644
+- name: Create monero log dir
+  file:
+    state: directory
+    owner: monerod
+    path: /var/log/monero
+    mode: 0700
+- name: Setup monero systemd service
+  template:
+    src: monerod.service.j2
+    dest: /etc/systemd/system/monerod.service
+  notify: [ "systemd" ]
+- name: Setup firewalld service
+  copy: src=firewalld-monerod.xml dest=/etc/firewalld/services/monerod.xml
+  notify: [ "firewalld" ]
+- meta: flush_handlers
+- name: Enable monero firewalld servicej
+  firewalld: service=monerod permanent=true state=enabled zone=public
+  notify: [ "firewalld" ]
+- name: Start monerod service
+  service: 
+    name: monerod
+    state: started
+    enabled: yes

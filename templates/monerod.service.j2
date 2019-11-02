@@ -1,0 +1,24 @@
+[Unit]
+Description=Monero Full Node
+After=network.target
+
+[Service]
+User=monerod
+RuntimeDirectory=monero
+#StateDirectory=monero
+#LogDirectory=monero
+
+Type=forking
+PIDFile=/run/monero/monerod.pid
+
+ExecStart={{ monero_install_dir }}/monerod \
+    --config-file /etc/monerod.conf \
+    --detach \
+    --non-interactive \
+    --pidfile /run/monero/monerod.pid
+
+Restart=always
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

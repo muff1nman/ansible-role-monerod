@@ -1,0 +1,25 @@
+---
+tmp_download_dir: /var/tmp/
+monero_version: 0.14.0.2
+monero_os: linux
+monero_arch: x64
+monero_archive_ext: ".tar.bz2"
+monero_archive: "monero-{{ monero_os }}-{{ monero_arch }}-{{ monero_version }}.tar.bz2"
+monero_install_dir: "/opt/monero-v{{ monero_version }}"
+monero_download_url: "https://downloads.getmonero.org/cli/{{ monero_archive }}"
+monero_checksum: "sha256:{{ monero_archive[monero_version].checksum }}"
+monero_archive:
+  0.11.1.0:
+    checksum: 6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
+  0.12.0.0:
+    checksum: 928ad08ff0dea2790c7777a70e610b2d33c35a5df5900fbb050cc8c659237636
+  0.12.1.0:
+    checksum: bc84f5ecdb0368791d13facc0e12bf774c44b29b8ae013457e01681ed7dfae97
+  0.12.3.0:
+    checksum: 72fe937aa2832a0079767914c27671436768ff3c486597c3353a8567d9547487
+  0.13.0.2:
+    checksum: a59fc0fffb325b4f92a5b500438bf340ddbf78e91581eb4df95ad2d5e5fb42a8
+  0.13.0.4:
+    checksum: 693e1a0210201f65138ace679d1ab1928aca06bb6e679c20d8b4d2d8717e50d6
+  0.14.0.2:
+    checksum: 4dd5cd9976eda6b33b16821e79e671527b78a1c9bfb3d973efe84b824642dd21
